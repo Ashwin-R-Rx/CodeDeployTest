@@ -1,0 +1,29 @@
+name: Create AWS SQS Queue
+
+on:
+  workflow_dispatch: # Trigger the workflow manually
+  push: # Optional: Trigger on push to main branch
+    branches:
+      - main
+
+jobs:
+  create-sqs:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # Step 2: Set up AWS CLI
+      - name: Configure AWS CLI
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }} # Optional
+
+      # Step 3: Create SQS Queue
+      - name: Create SQS Queue
+        run: |
+          aws sqs create-queue --queue-name GitHubActionQueue --attributes VisibilityTimeout=120,MessageRetentionPeriod=10000,DelaySeconds=0

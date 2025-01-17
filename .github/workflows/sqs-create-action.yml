@@ -26,4 +26,9 @@ jobs:
       # Step 3: Create SQS Queue
       - name: Create SQS Queue
         run: |
-          aws sqs create-queue --queue-name GitHubActionQueue --attributes VisibilityTimeout=120,MessageRetentionPeriod=10000,DelaySeconds=0
+          aws sqs create-queue --queue-name GitHubActionQueue --attributes VisibilityTimeout=120,MessageRetentionPeriod=3000,DelaySeconds=0
+
+      # Step 3: Create SQS Queue
+      - name: Create SQS Queue
+        run: |
+          echo "SQS Created"

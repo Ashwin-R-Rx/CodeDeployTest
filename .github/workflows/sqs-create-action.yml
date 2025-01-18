@@ -57,7 +57,8 @@ jobs:
 
       # Step 6: Send Message to SQS
       - name: Send Message to SQS
-        run: |
+        run: |           
+          QUEUE_URL=$(QUEUE_URL 2>/dev/null | tr -d '\n' | tr -d '\r')
           echo "Sending message to SQS Queue: $QUEUE_URL"
           aws sqs send-message \
             --queue-url "$QUEUE_URL" \

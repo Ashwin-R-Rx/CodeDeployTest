@@ -1,15 +1,15 @@
 provider "aws" {
-  region = "us-east-1"  # Change this to your desired AWS region
+  region = "us-west-2"  # Change this to your desired AWS region
 }
 
-# Check if the SQS queue already exists
+# Attempt to find the SQS queue (this will fail if it doesn't exist)
 data "aws_sqs_queue" "existing_queue" {
-  name = "TerraformSQSQueue"  # Replace with the desired queue name
+  name = "my-queue-name"  # Replace with your desired queue name
 }
 
-# If the queue does not exist, create a new one
+# Create the SQS queue only if it doesn't exist (use count to check)
 resource "aws_sqs_queue" "new_queue" {
-  count = length(data.aws_sqs_queue.existing_queue.id) == 0 ? 1 : 0
+  count = length(try(data.aws_sqs_queue.existing_queue.id, [])) == 0 ? 1 : 0
 
-  name = "TerraformSQSQueue"  # Replace with your queue name
+  name = "my-queue-name"  # Replace with your desired queue name
 }

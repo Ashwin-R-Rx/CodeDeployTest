@@ -36,7 +36,6 @@ jobs:
           else
             echo "Queue exists at $QUEUE_URL"
             echo "CREATE_QUEUE=false" >> $GITHUB_ENV
-          fi
 
       # Step 4: Create SQS Queue if not found
       - name: Create SQS Queue if not found
@@ -81,4 +80,4 @@ jobs:
           terraform init
           terraform plan
           terraform apply -auto-approve
-          terraform output 
+          terraform output

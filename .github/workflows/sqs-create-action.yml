@@ -55,7 +55,7 @@ jobs:
           
           # Use sed to remove unwanted parts and clean the URL
           QUEUE_URL=$(echo "$RAW_QUEUE_URL" | sed 's/::debug::.*//')
-          
+
           # Check if the URL matches the expected SQS format
           if echo "$QUEUE_URL" | grep -qE '^https://sqs\..*\.amazonaws\.com/[0-9]+/.+$'; then
             echo "QUEUE_URL=$QUEUE_URL" >> $GITHUB_ENV

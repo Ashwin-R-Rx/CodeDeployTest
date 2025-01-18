@@ -1,4 +1,4 @@
-name: Create SQS Queue and Send Message
+name: Create SQS Queue via terraform and Send Message
 
 on:
   workflow_dispatch: 

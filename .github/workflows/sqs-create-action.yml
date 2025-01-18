@@ -1,7 +1,7 @@
 name: Create SQS Queue via terraform and Send Message
 
 on:
-  workflow_dispatch: 
+  workflow_dispatch:
   push: # Trigger on push to main branch
     branches:
       - main
@@ -15,18 +15,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # Step 2: Install Terraform
+      # Step 2: Setup Terraform
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
         with:
-          terraform_version: 1.5.7 # Specify the required version
+          terraform_version: 1.5.7
 
       # Step 3: Configure AWS CLI
       - name: Configure AWS CLI
         run: |
           aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
           aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
-          aws configure set default.region us-east-1 # Replace with your region
+          aws configure set default.region us-east-1
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -42,29 +42,35 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
-      # Step 5: Create SQS Queue with Terraform
+      # Step 5: Create SQS Queue with Terraform if Not Found
       - name: Create SQS Queue with Terraform
         if: env.QUEUE_URL == 'NOT_FOUND'
         run: |
           cd terraform
           terraform init
           terraform apply -auto-approve
+          # Extract the clean queue URL
           QUEUE_URL=$(terraform output -raw queue_url 2>/dev/null | tr -d '\n' | tr -d '\r')
           echo "QUEUE_URL=$QUEUE_URL" >> $GITHUB_ENV
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
-      # Step 6: Send Message to SQS
+      # Step 6: Debug QUEUE_URL
+      - name: Debug QUEUE_URL
+        run: |
+          echo "Extracted QUEUE_URL: $QUEUE_URL"
+        env:
+          QUEUE_URL: ${{ env.QUEUE_URL }}
+
+      # Step 7: Send Message to SQS
       - name: Send Message to SQS
-        run: |           
-          QUEUE_URL=$(QUEUE_URL 2>/dev/null | tr -d '\n' | tr -d '\r')
+        run: |
           echo "Sending message to SQS Queue: $QUEUE_URL"
           aws sqs send-message \
             --queue-url "$QUEUE_URL" \
-            --message-body "Success Message from GitHub Actions!" \
+            --message-body "Hello from GitHub Actions!" \
             --delay-seconds 0
-          echo "SQS Message Sent"
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

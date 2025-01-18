@@ -50,7 +50,7 @@ jobs:
           terraform init
           terraform apply -auto-approve
           # Extract the clean queue URL
-          QUEUE_URL=$(terraform output -raw queue_url 2>/dev/null | tr -d '\n' | tr -d '\r')
+          QUEUE_URL=$(terraform output -raw queue_url 2>/dev/null | sed -e 's/^[ \t]*//;s/[ \t]*$//')
           echo "QUEUE_URL=$QUEUE_URL" >> $GITHUB_ENV
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}

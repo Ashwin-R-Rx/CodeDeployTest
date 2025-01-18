@@ -11,7 +11,7 @@ resource "aws_sqs_queue" "example" {
   delay_seconds               = 0
   max_message_size            = 262144
   message_retention_seconds   = 10000
-  visibility_timeout_seconds  = 30
+  visibility_timeout_seconds  = 10
 
   tags = {
     Environment = "Dev"

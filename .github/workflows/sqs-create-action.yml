@@ -46,6 +46,7 @@ jobs:
       - name: Create SQS Queue with Terraform
         if: env.QUEUE_URL == 'NOT_FOUND'
         run: |
+          cd terraform
           terraform init
           terraform apply -auto-approve
           QUEUE_URL=$(terraform output -raw queue_url)

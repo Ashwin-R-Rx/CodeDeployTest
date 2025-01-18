@@ -73,11 +73,18 @@ jobs:
         with:
           terraform_version: '1.5.0'  # Use the desired Terraform version
 
-      # Step 3: Change directory to where Terraform files are located
+      # Step 3: Set AWS credentials for Terraform
+      - name: Set AWS credentials
+        run: |
+          echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> $GITHUB_ENV
+          echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> $GITHUB_ENV
+          echo "AWS_REGION=${{ secrets.AWS_REGION }}" >> $GITHUB_ENV
+
+      # Step 4: Change directory to where Terraform files are located
       - name: Change directory to terraform folder
         run: cd terraform  # Assuming your Terraform files are in the 'terraform' directory
 
-      # Step 4: Initialize Terraform
+      # Step 5: Initialize Terraform
       - name: Terraform Init
         run: |
           cd terraform  # Navigate to the Terraform directory

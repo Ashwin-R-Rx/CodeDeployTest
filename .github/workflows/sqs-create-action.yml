@@ -28,14 +28,18 @@ jobs:
         id: check_queue
         run: |
           QUEUE_NAME="GitHubActionsQueueTest"
-          QUEUE_URL=$(aws sqs get-queue-url --queue-name $QUEUE_NAME --query 'QueueUrl' --output text 2>/dev/null)
-          
-          if [ "$QUEUE_URL" == "None" ]; then
+    
+          # Try to get the Queue URL and handle any errors
+          QUEUE_URL=$(aws sqs get-queue-url --queue-name $QUEUE_NAME --query 'QueueUrl' --output text 2>/tmp/aws_error.log) || true
+    
+          # Check if the Queue URL is empty (i.e., it doesn't exist)
+          if [[ "$QUEUE_URL" == "None" || -z "$QUEUE_URL" ]]; then
             echo "Queue does not exist. Creating it."
             echo "CREATE_QUEUE=true" >> $GITHUB_ENV
           else
             echo "Queue exists at $QUEUE_URL"
             echo "CREATE_QUEUE=false" >> $GITHUB_ENV
+          fi
 
       # Step 4: Create SQS Queue if not found
       - name: Create SQS Queue if not found

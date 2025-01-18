@@ -52,12 +52,17 @@ jobs:
           # Extract and sanitize the clean queue URL
           RAW_QUEUE_URL=$(terraform output -raw queue_url 2>/dev/null)
           echo "Raw Terraform Output: $RAW_QUEUE_URL"  # Debugging step
-          QUEUE_URL=$(echo "$RAW_QUEUE_URL" | grep -Eo '^https://sqs\\..*\\.amazonaws\\.com/[0-9]+/.+$' || echo "INVALID")
-          if [ "$QUEUE_URL" == "INVALID" ]; then
+          
+          # Use sed to remove unwanted parts and clean the URL
+          QUEUE_URL=$(echo "$RAW_QUEUE_URL" | sed 's/::debug::.*//')
+          
+          # Check if the URL matches the expected SQS format
+          if echo "$QUEUE_URL" | grep -qE '^https://sqs\..*\.amazonaws\.com/[0-9]+/.+$'; then
+            echo "QUEUE_URL=$QUEUE_URL" >> $GITHUB_ENV
+          else
             echo "Error: Failed to extract valid queue URL" >&2
             exit 1
           fi
-          echo "QUEUE_URL=$QUEUE_URL" >> $GITHUB_ENV
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

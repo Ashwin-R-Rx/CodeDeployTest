@@ -27,7 +27,7 @@ jobs:
       - name: Check if SQS Queue exists
         id: check_queue
         run: |
-          QUEUE_NAME="GitHubActionsQueue" >> $GITHUB_ENV
+          QUEUE_NAME="GitHubActionsQueue"
     
           # Try to get the Queue URL and handle any errors
           QUEUE_URL=$(aws sqs get-queue-url --queue-name $QUEUE_NAME --query 'QueueUrl' --output text 2>/tmp/aws_error.log) || true
@@ -54,7 +54,8 @@ jobs:
       - name: Send Message to SQS Queue
         run: |
           MESSAGE_BODY="Message from GitHub Actions!"
-          QUEUE_URL=$(aws sqs get-queue-url --queue-name {{ env.QUEUE_NAME }} --query 'QueueUrl' --output text)
+          QUEUE_NAME="GitHubActionsQueue"
+          QUEUE_URL=$(aws sqs get-queue-url --queue-name $QUEUE_NAME --query 'QueueUrl' --output text)
           aws sqs send-message --queue-url $QUEUE_URL --message-body "$MESSAGE_BODY"
           echo "Message sent to the queue successfully."
 

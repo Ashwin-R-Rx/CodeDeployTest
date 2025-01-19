@@ -27,7 +27,7 @@ jobs:
       - name: Check if SQS Queue exists
         id: check_queue
         run: |
-          QUEUE_NAME="GitHubActionsQueue"
+          QUEUE_NAME="GitHubActionsQueue" >> $GITHUB_ENV
     
           # Try to get the Queue URL and handle any errors
           QUEUE_URL=$(aws sqs get-queue-url --queue-name $QUEUE_NAME --query 'QueueUrl' --output text 2>/tmp/aws_error.log) || true
